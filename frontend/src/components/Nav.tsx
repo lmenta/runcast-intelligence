@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Mic } from 'lucide-react'
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs'
 
 const links = [
   { href: '/', label: 'Home' },
@@ -12,6 +12,7 @@ const links = [
 
 export default function Nav() {
   const path = usePathname()
+  const { isSignedIn } = useUser()
   return (
     <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
@@ -40,17 +41,15 @@ export default function Nav() {
             ))}
           </div>
 
-          <SignedOut>
+          {isSignedIn ? (
+            <UserButton />
+          ) : (
             <SignInButton mode="modal">
               <button className="rounded-lg bg-orange-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">
                 Sign in
               </button>
             </SignInButton>
-          </SignedOut>
-
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
+          )}
         </div>
       </nav>
     </header>
