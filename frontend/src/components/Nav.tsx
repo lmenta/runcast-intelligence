@@ -2,9 +2,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Mic } from 'lucide-react'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 
 const links = [
-  { href: '/', label: 'Search' },
+  { href: '/', label: 'Home' },
   { href: '/podcasts', label: 'Podcasts' },
   { href: '/episodes', label: 'Episodes' },
 ]
@@ -21,20 +22,35 @@ export default function Nav() {
           <span>RunCast</span>
           <span className="text-xs font-normal text-gray-400">Intelligence</span>
         </Link>
-        <div className="flex items-center gap-1">
-          {links.map(l => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                path === l.href
-                  ? 'bg-orange-50 font-medium text-orange-600'
-                  : 'text-gray-500 hover:text-gray-900'
-              }`}
-            >
-              {l.label}
-            </Link>
-          ))}
+
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-1">
+            {links.map(l => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                  path === l.href
+                    ? 'bg-orange-50 font-medium text-orange-600'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="rounded-lg bg-orange-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors">
+                Sign in
+              </button>
+            </SignInButton>
+          </SignedOut>
+
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
         </div>
       </nav>
     </header>

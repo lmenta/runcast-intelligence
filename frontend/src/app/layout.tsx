@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import Nav from '@/components/Nav'
 
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>
-        <Nav />
-        <main>{children}</main>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${inter.className} bg-gray-50 text-gray-900 antialiased`}>
+          <Nav />
+          <main>{children}</main>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
