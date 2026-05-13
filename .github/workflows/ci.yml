@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install fastapi uvicorn httpx feedparser supabase openai anthropic python-dotenv pydantic pydantic-settings tenacity rich
+      - name: Import check
+        run: |
+          python -c "from src.embeddings.chunker import chunk_transcript; print('✓ chunker')"
+          python -c "from src.api.models import SearchRequest; print('✓ models')"
+          python -c "from src.ingestion.crawler import crawl_feed; print('✓ crawler')"
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_USE_MOCK: "true"
