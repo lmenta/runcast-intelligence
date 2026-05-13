@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     supabase_url: str
     supabase_service_key: str
     openai_api_key: str
-    anthropic_api_key: str
+    openrouter_api_key: str
 
     class Config:
         env_file = ".env"

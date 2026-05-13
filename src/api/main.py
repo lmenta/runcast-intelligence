@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import anthropic
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
@@ -11,7 +10,7 @@ from supabase import create_client
 from src.api.models import (
     EpisodeOut, PodcastOut, SearchRequest, SearchResponse,
 )
-from src.api.search import search as run_search
+from src.api.search import search as run_search, OPENROUTER_BASE_URL
 from src.config import settings
 
 app = FastAPI(
@@ -30,7 +29,7 @@ app.add_middleware(
 # Initialise clients once at startup
 db = create_client(settings.supabase_url, settings.supabase_service_key)
 openai_client = OpenAI(api_key=settings.openai_api_key)
-anthropic_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+llm_client = OpenAI(api_key=settings.openrouter_api_key, base_url=OPENROUTER_BASE_URL)
 
 
 # ── Search ───────────────────────────────────────────────────────────────────
@@ -40,7 +39,7 @@ def search(request: SearchRequest) -> SearchResponse:
     """Semantic search across all indexed podcast transcripts."""
     if not request.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty")
-    return run_search(request, db, openai_client, anthropic_client)
+    return run_search(request, db, openai_client, llm_client)
 
 
 # ── Podcasts ─────────────────────────────────────────────────────────────────
